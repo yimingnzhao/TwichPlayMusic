@@ -22,7 +22,7 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 // Called every time a message comes in
-function onMessageHandler (target, context, msg, self) {
+function onMessageHandler(target, context, msg, self) {
   if (self) { return; } // Ignore messages from the bot
 
   // Remove whitespace from chat message
@@ -36,15 +36,26 @@ function onMessageHandler (target, context, msg, self) {
   } else {
     console.log(`* Unknown command ${commandName}`);
   }
+
+  // var i = null;
+  // for (i = 0; tags.length > i; i += 1) {
+  //   tagMap[tags[i].tagName] = tags[i];
+  // }
+
+  // var hasTag = function (tagName) {
+  //   return tagMap[tagName];
+  // };
 }
 
+
+
 // Function called when the "dice" command is issued
-function rollDice () {
+function rollDice() {
   const sides = 6;
   return Math.floor(Math.random() * sides) + 1;
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler (addr, port) {
+function onConnectedHandler(addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
 }
