@@ -14,6 +14,8 @@ const opts = {
 // Create a client with our options
 const client = new tmi.client(opts);
 
+const spawn = require("child_process").spawn;
+
 // Register our event handlers (defined below)
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
@@ -30,6 +32,7 @@ function onMessageHandler(target, context, msg, self) {
 
   // If the command is known, let's execute it
   if (commandName === '!dice') {
+    const pythonProcess = spawn('python3',["player.py", 440, 1]);
     const num = rollDice();
     client.say(target, `You rolled a ${num}`);
     console.log(`* Executed ${commandName} command`);
