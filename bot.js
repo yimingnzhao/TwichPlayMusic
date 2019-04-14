@@ -1,5 +1,5 @@
 const tmi = require('tmi.js');
-
+var ks = require('node-key-sender');
 // Define configuration options
 const opts = {
   identity: {
@@ -54,6 +54,7 @@ function onMessageHandler(target, context, msg, self) {
         noteLength = args[1];
         console.log("note " + noteCode + " of length " + noteLength + " added");
         const pythonProcess = spawn(python, [playerscript, noteTrans[noteCode], Number(noteLength)]);
+        ks.sendKey(args[0].substring(0,1));
         notesList.push({ noteCode, noteLength });
         console.log(notesList, { 'maxArrayLength': null });
       }
@@ -62,6 +63,7 @@ function onMessageHandler(target, context, msg, self) {
       noteLength = defaultDuration;
       console.log("note " + args[0] + " of default length " + noteLength + " added"); noteCode = args[0];
       const pythonProcess = spawn(python, [playerscript, noteTrans[args[0]], noteLength]);
+      ks.sendKey(args[0].substring(0, 1));
       notesList.push({ noteCode, noteLength });
       console.log(notesList, { 'maxArrayLength': null });
     }
