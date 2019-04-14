@@ -12,21 +12,13 @@ const opts = {
   ]
 };
 
-const express = require("express");
-const app = express();
-app.use(express.static(__dirname + '/public'));
-app.get('/', function(req,res){
-   res.sendFile(__dirname+'/index.html')
-});
-app.listen(3000);
-
 var noteTrans = require('./notefreq.json');
 var std = "";
 var notes = ["A", "B", "C", "D", "E", "F", "G"];
 
 // Create a client with our options
 const client = new tmi.client(opts);
-const defaultDuration = 4.0;
+const defaultDuration = 2.0;
 const playerscript = "player.py";
 const python3 = 'python3';
 const maxDuration = 5.0;
@@ -56,7 +48,7 @@ function onMessageHandler(target, context, msg, self) {
     duration = Math.max(maxDuration, Number([args[1]]));
   }
   // Frequency input
-  if(args.length == 2 && !isNaN(args[0])) {
+  if(!isNaN(args[0])) {
     frequency = Number(args[0]);
   }
   // Note input
