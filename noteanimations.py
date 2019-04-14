@@ -6,8 +6,6 @@ import math
 import sys
 import os
 
-print('hi')
-
 width = 1500
 height = 900
 noterad = 10
@@ -41,6 +39,9 @@ def update_notes (img):
             toDraw.remove(note)
         else:
             i += 1
+
+cv.namedWindow("Twitch Plays Music!", cv.WND_PROP_FULLSCREEN)
+cv.setWindowProperty("Twitch Plays Music!",cv.WND_PROP_FULLSCREEN,cv.WINDOW_FULLSCREEN)
 
 while(1):
     blank_image = np.ones((height, width,3), np.uint8) * 255

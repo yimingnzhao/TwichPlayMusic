@@ -22,6 +22,7 @@ app.listen(3000);
 
 var noteTrans = require('./notefreq.json');
 var std = "";
+var notes = ["A", "B", "C", "D", "E", "F", "G"];
 
 // Create a client with our options
 const client = new tmi.client(opts);
@@ -47,21 +48,27 @@ function onMessageHandler(target, context, msg, self) {
 
   // If the command is known, let's execute it
   var args = commandName.split(" ");
+
+  var duration = defaultDuration;
+  var frequency = 0;
+  // Duration input
+  if(args.length == 2 && !isNaN(args[1])) {
+    duration = Math.max(maxDuration, Number([args[1]]));
+  }
   // Frequency input
-  if(args.length == 2 && !isNaN(args[0]) && !isNaN(args[1])) {
-    const pythonProcess = spawn(python3,[playerscript, Number(args[0]), Math.max(maxDuration, Number([args[1]]))]);
-    std += Number(args[0]) + " " +  Math.max(maxDuration, Number([args[1]]));
+  if(args.length == 2 && !isNaN(args[0])) {
+    frequency = Number(args[0]);
   }
   // Note input
-  if(noteTrans.hasOwnProperty(args[0])) {
-    if(args.length == 2 && !isNaN(args[1])) {
-      const pythonProcess = spawn(python3,[playerscript, noteTrans[args[0]], Math.max(maxDuration, Number([args[1]]))]); 
-      std += noteTrans[args[0]] + " " + Math.max(maxDuration, Number([args[1]]));
-    } else {
-      const pythonProcess = spawn(python3,[playerscript, noteTrans[args[0]], defaultDuration]); 
-      std += noteTrans[args[0]] + " " + defaultDuration;
-    }
+  if(noteTrans.hasOwnProperty(args[0] + "4")) {
+    frequency = noteTrans[args[0] + "4"];
   }
+  if(noteTrans.hasOwnProperty(args[0])) {
+    frequency = noteTrans[args[0]];
+  } 
+    
+  const pythonProcess = spawn(python3,[playerscript, frequency, duration]); 
+  std += frequency + " " + duration;
 }
 
 // Called every time the bot connects to Twitch chat
