@@ -15,11 +15,13 @@ var noteTrans = require('./notefreq.json')
 
 // Create a client with our options
 const client = new tmi.client(opts);
-const defaultDuration = 2.0;
+const defaultDuration = '2';
 const playerscript = "player.py";
-const python3 = 'python3';
+const python = 'python';
 
 const spawn = require("child_process").spawn;
+
+var notesList = [];
 
 // Register our event handlers (defined below)
 client.on('message', onMessageHandler);
@@ -38,15 +40,30 @@ function onMessageHandler(target, context, msg, self) {
   // If the command is known, let's execute it
   var args = commandName.split(" ");
   // Frequency input
-  if(args.length == 2 && !isNaN(args[0]) && !isNaN(args[1])) {
-    const pythonProcess = spawn(python3,[playerscript, Number(args[0]), Number([args[1]])]);
-  }
+  // if(args.length == 2 && !isNaN(args[0]) && !isNaN(args[1])) {
+  //   const pythonProcess = spawn(python3,[playerscript, Number(args[0]), Number([args[1]])]);
+  // }
+
+  var noteCode = "A1";
+  var noteLength = 0;
   // Note input
-  if(noteTrans.hasOwnProperty(args[0])) {
-    if(args.length == 2 && !isNaN(args[1])) {
-      const pythonProcess = spawn(python3,[playerscript, noteTrans[args[0]], Number([args[1]])]); 
+  if (noteTrans.hasOwnProperty(args[0])) {
+    if (args.length == 2 && !isNaN(args[1])) {
+      if (args[1] <= 10 && args[1] > 0) {
+        noteCode = args[0];
+        noteLength = args[1];
+        console.log("note " + noteCode + " of length " + noteLength + " added");
+        const pythonProcess = spawn(python, [playerscript, noteTrans[noteCode], Number(noteLength)]);
+        notesList.push({ noteCode, noteLength });
+        console.log(notesList, { 'maxArrayLength': null });
+      }
     } else {
-      const pythonProcess = spawn(python3,[playerscript, noteTrans[args[0]], defaultDuration]); 
+      noteCode = args[0];
+      noteLength = defaultDuration;
+      console.log("note " + args[0] + " of default length " + noteLength + " added"); noteCode = args[0];
+      const pythonProcess = spawn(python, [playerscript, noteTrans[args[0]], noteLength]);
+      notesList.push({ noteCode, noteLength });
+      console.log(notesList, { 'maxArrayLength': null });
     }
   }
 }
