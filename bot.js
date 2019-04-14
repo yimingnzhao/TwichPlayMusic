@@ -16,7 +16,7 @@ var noteTrans = require('./notefreq.json')
 // Create a client with our options
 const client = new tmi.client(opts);
 const defaultDuration = '2';
-const playerscript = "player.py";
+const playerscript = "pyAudioPlayer.py";
 const python = 'python';
 
 const spawn = require("child_process").spawn;
