@@ -31,20 +31,10 @@ function onMessageHandler (target, context, msg, self) {
   const commandName = msg.trim();
 
   // If the command is known, let's execute it
-  if (commandName === '!dice') {
-    const pythonProcess = spawn('python3',["player.py", 440, 1]);
-    const num = rollDice();
-    client.say(target, `You rolled a ${num}`);
-    console.log(`* Executed ${commandName} command`);
-  } else {
-    console.log(`* Unknown command ${commandName}`);
+  var args = commandName.split(" ");
+  if(args.length == 2) {
+    const pythonProcess = spawn('python3',["player.py", Number(args[0]), Number([args[1]])]);
   }
-}
-
-// Function called when the "dice" command is issued
-function rollDice () {
-  const sides = 6;
-  return Math.floor(Math.random() * sides) + 1;
 }
 
 // Called every time the bot connects to Twitch chat
