@@ -1,5 +1,6 @@
 const tmi = require('tmi.js');
-var ks = require('node-key-sender');
+const fs = require('fs');
+
 // Define configuration options
 const opts = {
   identity: {
@@ -11,13 +12,24 @@ const opts = {
   ]
 };
 
-var noteTrans = require('./notefreq.json')
+const express = require("express");
+const app = express();
+app.use(express.static(__dirname + '/public'));
+app.get('/', function(req,res){
+   res.sendFile(__dirname+'/index.html')
+});
+app.listen(3000);
+
+var noteTrans = require('./notefreq.json');
+var std = "";
+var notes = ["A", "B", "C", "D", "E", "F", "G"];
 
 // Create a client with our options
 const client = new tmi.client(opts);
-const defaultDuration = '2';
+const defaultDuration = 2.0;
 const playerscript = "pyAudioPlayer.py";
 const python = 'python';
+const maxDuration = 5.0;
 
 const spawn = require("child_process").spawn;
 
@@ -32,45 +44,51 @@ client.connect();
 
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
-  if (self) { return; } // Ignore messages from the bot
-
   // Remove whitespace from chat message
   const commandName = msg.trim().toUpperCase();
+  console.log(commandName);
 
   // If the command is known, let's execute it
   var args = commandName.split(" ");
-  // Frequency input
-  // if(args.length == 2 && !isNaN(args[0]) && !isNaN(args[1])) {
-  //   const pythonProcess = spawn(python3,[playerscript, Number(args[0]), Number([args[1]])]);
-  // }
 
-  var noteCode = "A1";
-  var noteLength = 0;
-  // Note input
-  if (noteTrans.hasOwnProperty(args[0])) {
-    if (args.length == 2 && !isNaN(args[1])) {
-      if (args[1] <= 10 && args[1] > 0) {
-        noteCode = args[0];
-        noteLength = args[1];
-        console.log("note " + noteCode + " of length " + noteLength + " added");
-        const pythonProcess = spawn(python, [playerscript, noteTrans[noteCode], Number(noteLength)]);
-        ks.sendKey(args[0].substring(0,1));
-        notesList.push({ noteCode, noteLength });
-        console.log(notesList, { 'maxArrayLength': null });
-      }
-    } else {
-      noteCode = args[0];
-      noteLength = defaultDuration;
-      console.log("note " + args[0] + " of default length " + noteLength + " added"); noteCode = args[0];
-      const pythonProcess = spawn(python, [playerscript, noteTrans[args[0]], noteLength]);
-      ks.sendKey(args[0].substring(0, 1));
-      notesList.push({ noteCode, noteLength });
-      console.log(notesList, { 'maxArrayLength': null });
-    }
+  var duration = defaultDuration;
+  var frequency = 0;
+  // Duration input
+  if(args.length == 2 && !isNaN(args[1])) {
+    duration = Math.max(maxDuration, Number([args[1]]));
   }
+  // Frequency input
+  if(args.length == 2 && !isNaN(args[0])) {
+    frequency = Number(args[0]);
+  }
+  // Note input
+  if(noteTrans.hasOwnProperty(args[0] + "4")) {
+    frequency = noteTrans[args[0] + "4"];
+  }
+  if(noteTrans.hasOwnProperty(args[0])) {
+    frequency = noteTrans[args[0]];
+  } 
+    
+  const pythonProcess = spawn(python3,[playerscript, frequency, duration]); 
+  std += frequency + " " + duration;
 }
 
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler(addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
 }
+
+function step() {
+  if(std != "") {
+    fs.writeFile("tmp", std, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+    }); 
+    std = ""
+  }
+  // animator.stdin.end();
+}
+
+// step();
+setInterval(step, .4);
