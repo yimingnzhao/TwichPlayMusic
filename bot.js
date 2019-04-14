@@ -11,8 +11,13 @@ const opts = {
   ]
 };
 
+var noteTrans = require('./notefreq.json')
+
 // Create a client with our options
 const client = new tmi.client(opts);
+const defaultDuration = 2.0;
+const playerscript = "player.py";
+const python3 = 'python3';
 
 const spawn = require("child_process").spawn;
 
@@ -28,22 +33,22 @@ function onMessageHandler(target, context, msg, self) {
   if (self) { return; } // Ignore messages from the bot
 
   // Remove whitespace from chat message
-  const commandName = msg.trim();
+  const commandName = msg.trim().toUpperCase();
 
   // If the command is known, let's execute it
   var args = commandName.split(" ");
-  if(args.length == 2) {
-    const pythonProcess = spawn('python3',["player.py", Number(args[0]), Number([args[1]])]);
+  // Frequency input
+  if(args.length == 2 && !isNaN(args[0]) && !isNaN(args[1])) {
+    const pythonProcess = spawn(python3,[playerscript, Number(args[0]), Number([args[1]])]);
   }
-
-  // var i = null;
-  // for (i = 0; tags.length > i; i += 1) {
-  //   tagMap[tags[i].tagName] = tags[i];
-  // }
-
-  // var hasTag = function (tagName) {
-  //   return tagMap[tagName];
-  // };
+  // Note input
+  if(noteTrans.hasOwnProperty(args[0])) {
+    if(args.length == 2 && !isNaN(args[1])) {
+      const pythonProcess = spawn(python3,[playerscript, noteTrans[args[0]], Number([args[1]])]); 
+    } else {
+      const pythonProcess = spawn(python3,[playerscript, noteTrans[args[0]], defaultDuration]); 
+    }
+  }
 }
 
 // Called every time the bot connects to Twitch chat
