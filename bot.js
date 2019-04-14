@@ -11,11 +11,19 @@ const opts = {
   ]
 };
 
+const express = require("express");
+const app = express();
+app.use(express.static(__dirname + '/public'));
+app.get('/', function(req,res){
+   res.sendFile(__dirname+'/index.html')
+});
+app.listen(3000);
+
 var noteTrans = require('./notefreq.json')
 
 // Create a client with our options
 const client = new tmi.client(opts);
-const defaultDuration = 2.0;
+const defaultDuration = 4.0;
 const playerscript = "player.py";
 const python3 = 'python3';
 const maxDuration = 5.0;
@@ -31,10 +39,9 @@ client.connect();
 
 // Called every time a message comes in
 function onMessageHandler(target, context, msg, self) {
-  if (self) { return; } // Ignore messages from the bot
-
   // Remove whitespace from chat message
   const commandName = msg.trim().toUpperCase();
+  console.log(commandName);
 
   // If the command is known, let's execute it
   var args = commandName.split(" ");
