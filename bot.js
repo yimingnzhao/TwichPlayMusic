@@ -25,6 +25,8 @@ const maxDuration = 5.0;
 
 const spawn = require("child_process").spawn;
 
+var notesList = [];
+
 // Register our event handlers (defined below)
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
