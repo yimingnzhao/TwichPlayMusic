@@ -24,7 +24,7 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 // Called every time a message comes in
-function onMessageHandler (target, context, msg, self) {
+function onMessageHandler(target, context, msg, self) {
   if (self) { return; } // Ignore messages from the bot
 
   // Remove whitespace from chat message
@@ -35,9 +35,18 @@ function onMessageHandler (target, context, msg, self) {
   if(args.length == 2) {
     const pythonProcess = spawn('python3',["player.py", Number(args[0]), Number([args[1]])]);
   }
+
+  // var i = null;
+  // for (i = 0; tags.length > i; i += 1) {
+  //   tagMap[tags[i].tagName] = tags[i];
+  // }
+
+  // var hasTag = function (tagName) {
+  //   return tagMap[tagName];
+  // };
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler (addr, port) {
+function onConnectedHandler(addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
 }
